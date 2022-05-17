@@ -4,6 +4,7 @@ pragma solidity >=0.7.0<0.9.0;
 contract Lottary{
     address public manager;
     address payable[] public participants;
+    address public  setwinner;
 
     constructor(){
         manager=msg.sender;
@@ -27,8 +28,12 @@ contract Lottary{
         address payable winner;
         uint index= r% participants.length;
         winner=participants[index];
-        winner.transfer(checkBalance());
+        // winner.transfer(checkBalance());
+        setwinner=winner;
+        (bool success,)=winner.call{value:checkBalance()}("");
+        require(success,"sorry money isnot send successfull");
         participants=new address payable[](0);
+
 
     }
 }
