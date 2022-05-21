@@ -5,6 +5,14 @@ contract Lottary{
     address public manager;
     address payable[] public participants;
     address public  setwinner;
+    uint public count;
+    address[] public prevWinner;
+
+     struct arr {
+        address user;
+        uint amount;
+    }
+    mapping(uint=> arr) public invest;
 
     constructor(){
         manager=msg.sender;
@@ -12,7 +20,14 @@ contract Lottary{
     receive() external payable{
         require(msg.value==2 ether,"You have to pay 2 Ether");
         participants.push(payable(msg.sender));
-    }
+        invest[count]=arr(msg.sender,msg.value); 
+        count++;   
+   }
+    // function see(uint a) public view returns(uint){
+      
+    //   return name.amount;
+
+    // }
     function checkBalance() public view returns(uint){
         require(msg.sender==manager,"Sorry You are not Manager");
         return address(this).balance;
@@ -30,6 +45,7 @@ contract Lottary{
         winner=participants[index];
         // winner.transfer(checkBalance());
         setwinner=winner;
+        prevWinner.push(winner);
         (bool success,)=winner.call{value:checkBalance()}("");
         require(success,"sorry money isnot send successfull");
         participants=new address payable[](0);
